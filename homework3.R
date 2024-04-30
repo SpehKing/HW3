@@ -1,16 +1,17 @@
 #SET YOUR WORKING DIRECTORY
-setwd("/Users/gasper/Documents/faks/Multimedija/2. letnik/2.semester/DSBA/HW3")
-
+setwd('/home/hmont/Documents/cours/TARTU-UNIVERSITY/S2/Business-Analytics/Homeworks/BA-Homework-03')
 
 #download necessary libraries (this needs to be run only once)
-install.packages('rvest')
-install.packages('qdap')
-install.packages('ggplot2')
+#install.packages('rvest')
+#install.packages('qdap')
+#install.packages('ggplot2')
 
 #activate libraries
 library(qdap)
 library(rvest)
 library(ggplot2)
+library(dplyr)
+library(stringr)
 
 # URL of the Inside Airbnb website
 url <- "https://insideairbnb.com/get-the-data/"
@@ -24,7 +25,9 @@ cities <- webpage %>%
   html_text() 
 
 # Randomly choose a city from the list
-random_city <- sample(cities, 1)
+#random_city <- sample(cities, 1)
+# We got the city Prague (and the put it in variable so it wouldn't change when we run everything)
+random_city <- "Prague, Prague, Czech Republic"
 
 # Print the randomly chosen city
 print(random_city)
@@ -67,13 +70,14 @@ listings_df  = read.csv("homework_dataset.csv.gz")
 # Write all the codes below the exercise
 # Comment your answer when a question is asked.
 
-#WRITE YOUR CITY NAME HERE------------->
+#WRITE YOUR CITY NAME HERE-------------> Prague, Prague, Czech Republic
 
 #EXERCISE 1 (6 points) ========================================
 
 # a) (1 point)
 # check the data format, what kind of variable do you have?
-
+str(listings_df)
+# There are num, chr, logical and int variables in the dataset.
 
 # b) (1 point)
 # subset your data to keep only 1000 rows
