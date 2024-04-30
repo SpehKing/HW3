@@ -154,7 +154,7 @@ listings_short$amenities <- NULL
 
 # Check the modified data types
 
-print(listings_short$price)
+str(listings_short)
 
 
 
