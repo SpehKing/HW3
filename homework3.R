@@ -92,10 +92,11 @@ which(is.na(listings_short$id))
 which(is.na(listings_short$host_id))
 which(is.na(listings_short$price))
 
-# We can see that there are no missing values in those important columns. If there was, we would remove the rows with the following code
+# We can see that right now there are no missing values in those important columns. If there was, we would remove the rows with the following code
 # We first store the missing row numbers in a variable, and then delete them from the dataframe with the minus sign
 # missing_rows <- which(is.na(listings_short$id))
 # listings_short <- listings_short[-missing_rows, ]
+# We will use this method in d) where after data type change, due to coercion NA appear.
 
 # d) (2 points) 
 # check the data type of all your columns. Are there some that needs to be changes, e.g. from integer to date or from date to text etc. 
@@ -109,6 +110,11 @@ listings_short$id <- as.integer(listings_short$id)
 # Clean columns with text and numbers
 listings_short$price <- as.numeric(gsub("[^0-9.]", "", listings_short$price))
 listings_short$bathrooms_text <- as.numeric(gsub("[^0-9.]", "", listings_short$bathrooms_text))
+
+#cleaning of price needed
+missing_rows <- which(is.na(listings_short$price))
+listings_short <- listings_short[-missing_rows, ]
+
 
 # Convert 'minimum_nights' and 'maximum_nights' columns to integer
 listings_short$minimum_nights <- as.integer(listings_short$minimum_nights)
@@ -162,7 +168,7 @@ str(listings_short)
 # save the resulting change in a new dataframe and save the dataframe locally on your computer. 
 updated_listings <- listings_short
 write.csv(updated_listings,'listings_updated.csv')
-
+  
 
 
 #EXERCISE 2 (10 points) ==============
@@ -173,11 +179,56 @@ write.csv(updated_listings,'listings_updated.csv')
 #Please note, examples are for Amsterdam.
 #Hint: Revenue is defined by prices paid. So if a guest books 1 night, the host gets revenue equal to nightly price.
 
+#we need to calculate the annual revenue assuming that every night is booked
+updated_listings$annual_revenue = updated_listings$price * 365
+
+# we calculate the revenue per neighborhood
+revenue_per_neighborhood <- updated_listings %>%
+  group_by(neighbourhood_cleansed) %>%
+  summarise(
+    number_of_listings = n(),
+    avg_revenue = mean(annual_revenue, na.rm = TRUE)
+  ) %>%
+  arrange(desc(number_of_listings)) %>%
+  mutate(neighbourhood_cleansed = factor(neighbourhood_cleansed, levels = unique(neighbourhood_cleansed)))
+
+
+
+#store max listings and max revenue for later use in the scaling process
+max_listings <- max(revenue_per_neighborhood$number_of_listings)
+max_revenue <- max(revenue_per_neighborhood$avg_revenue)
+
+ggplot(revenue_per_neighborhood, aes(x = neighbourhood_cleansed)) +
+  geom_bar(aes(y = number_of_listings), stat = "identity", fill = "#69b3a2") +
+  geom_line(aes(y = avg_revenue / max_revenue * max_listings, group = 1), color = "black") +
+  scale_y_continuous(
+    name = "Number of Listings",
+    sec.axis = sec_axis(~ . / max_listings * max_revenue, 
+                        name = "Average Revenue (in millions CZK)",
+                        labels = scales::comma_format(suffix = "M", accuracy = 0.01, scale = 1e-6))
+  ) +
+  ggtitle("Listings vs. Prices Per Neighborhood") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(vjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title.x = element_blank()
+  )
+  
+
+
+
+
+
 
 
 # b) (3 points)
 #Explain the results in the above figure in detail by commenting below. 
-
+#In the above figure it is clear that the amount of listings is the highest in the Praha 1 district because that district is in the center of the city
+#and most tourists that book on such platforms choose to stay near the center.
+#The popularity of renting a place outside the center rapidly declines.
+#The highest Average Revenue is in Praha 2 district because it is considered the area of the historic establishment of the Czech ruler
+#and therefore the value of the property is the highest. 
 
 
 #EXERCISE 3 (10 points) ==============
