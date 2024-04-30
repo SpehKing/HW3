@@ -1,17 +1,17 @@
 #SET YOUR WORKING DIRECTORY
-setwd("/Users/gasper/Documents/faks/Multimedija/2. letnik/2.semester/DSBA/HW3")
-
+setwd('/home/hmont/Documents/cours/TARTU-UNIVERSITY/S2/Business-Analytics/Homeworks/BA-Homework-03')
 
 #download necessary libraries (this needs to be run only once)
-install.packages('rvest')
-install.packages('qdap')
-install.packages('ggplot2')
+#install.packages('rvest')
+#install.packages('qdap')
+#install.packages('ggplot2')
 
 #activate libraries
 library(qdap)
 library(rvest)
 library(ggplot2)
 library(dplyr)
+library(stringr)
 
 # URL of the Inside Airbnb website
 url <- "https://insideairbnb.com/get-the-data/"
@@ -25,7 +25,9 @@ cities <- webpage %>%
   html_text() 
 
 # Randomly choose a city from the list
-random_city <- sample(cities, 1)
+#random_city <- sample(cities, 1)
+# We got the city Prague (and the put it in variable so it wouldn't change when we run everything)
+random_city <- "Prague, Prague, Czech Republic"
 
 # Print the randomly chosen city
 print(random_city)
@@ -68,65 +70,91 @@ listings_df  = read.csv("homework_dataset.csv.gz")
 # Write all the codes below the exercise
 # Comment your answer when a question is asked.
 
-#WRITE YOUR CITY NAME HERE------------->Prague
+#WRITE YOUR CITY NAME HERE-------------> Prague, Prague, Czech Republic
 
 #EXERCISE 1 (6 points) ========================================
 
 # a) (1 point)
 # check the data format, what kind of variable do you have?
-#In the data format the variables that are there are int, chr, num, logi.
+str(listings_df)
+# There are num, chr, logical and int variables in the dataset.
 
 # b) (1 point)
 # subset your data to keep only 1000 rows
 listings_short=head(listings_df,1000)
 
-
-
 # c) (1 point) 
 # are there any missing values in your dataset's important columns, such as id, host_id or price? If yes, remove the rows where there are any missing values. 
 # if there are no missing values, explain how you checked for them and how you would remove them. 
-which(is.na(listings_short$price))
+# We can check which cells might be empty with the is.na function we saw in class. 
+# We can obviously not check them all manually so we'll make a loop.
 which(is.na(listings_short$id))
 which(is.na(listings_short$host_id))
+which(is.na(listings_short$price))
 
-missing_rows <- which(is.na(listings_short$id))
-listings_short <- listings_short[-missing_rows, ]
-
-
-
+# We can see that there are no missing values in those important columns. If there was, we would remove the rows with the following code
+# We first store the missing row numbers in a variable, and then delete them from the dataframe with the minus sign
+# missing_rows <- which(is.na(listings_short$id))
+# listings_short <- listings_short[-missing_rows, ]
 
 # d) (2 points) 
 # check the data type of all your columns. Are there some that needs to be changes, e.g. from integer to date or from date to text etc. 
 # are there any other modifications needed to be done to column types or values to prepare your data for analysis. 
 # hint: pay attention to price column specifically and make any necessary changes.
+str(listings_short)
 
-for (col in names(listings_short)){
-  na_count <- sum(is.na(listings_short[[col]]))
-  if (na_count > 999) {
-    listings_short[[col]] <- NULL
-  }
-}
-listings_short$amenities <- NULL
-print(listings_short$price)
-
+#change the id to integer
 listings_short$id <- as.integer(listings_short$id)
 
+# Clean columns with text and numbers
+listings_short$price <- as.numeric(gsub("[^0-9.]", "", listings_short$price))
+listings_short$bathrooms_text <- as.numeric(gsub("[^0-9.]", "", listings_short$bathrooms_text))
+
+# Convert 'minimum_nights' and 'maximum_nights' columns to integer
+listings_short$minimum_nights <- as.integer(listings_short$minimum_nights)
+listings_short$maximum_nights <- as.integer(listings_short$maximum_nights)
+
+# Convert 'host_response_rate' and 'host_acceptance_rate' columns to numeric
+listings_short$host_response_rate <- as.numeric(gsub("[%]", "", listings_short$host_response_rate))
+listings_short$host_acceptance_rate <- as.numeric(gsub("[%]", "", listings_short$host_acceptance_rate))
+
+# Convert date columns to Date type
 listings_short$last_scraped <- as.Date(listings_short$last_scraped)
 listings_short$host_since <- as.Date(listings_short$host_since)
 listings_short$first_review <- as.Date(listings_short$first_review)
 listings_short$last_review <- as.Date(listings_short$last_review)
 listings_short$calendar_last_scraped <- as.Date(listings_short$calendar_last_scraped)
 
+# Convert boolean columns to logical (as.logical didn't work because it didn't understand "t" and "f")
 listings_short$host_is_superhost <- ifelse(listings_short$host_is_superhost == "t", TRUE,
                                            ifelse(listings_short$host_is_superhost == "f", FALSE, NA))
 listings_short$host_has_profile_pic <- ifelse(listings_short$host_has_profile_pic == "t", TRUE,
-                                           ifelse(listings_short$host_has_profile_pic == "f", FALSE, NA))
+                                              ifelse(listings_short$host_has_profile_pic == "f", FALSE, NA))
 listings_short$host_identity_verified <- ifelse(listings_short$host_identity_verified == "t", TRUE,
-                                           ifelse(listings_short$host_identity_verified == "f", FALSE, NA))
+                                                ifelse(listings_short$host_identity_verified == "f", FALSE, NA))
 listings_short$has_availability <- ifelse(listings_short$has_availability == "t", TRUE,
-                                           ifelse(listings_short$has_availability == "f", FALSE, NA))
+                                          ifelse(listings_short$has_availability == "f", FALSE, NA))
 listings_short$instant_bookable <- ifelse(listings_short$instant_bookable == "t", TRUE,
-                                           ifelse(listings_short$instant_bookable == "f", FALSE, NA))
+                                          ifelse(listings_short$instant_bookable == "f", FALSE, NA))
+
+# Convert 'number_of_reviews' columns to integer
+listings_short$number_of_reviews <- as.integer(listings_short$number_of_reviews)
+
+#remove the collumns with more than 999 missing values
+str(listings_short)
+for (col in names(listings_short)){
+  na_count <- sum(is.na(listings_short[[col]]))
+  if (na_count > 999) {
+    listings_short[[col]] <- NULL
+  }
+}
+
+#remove amenities because it's a empty list of type char
+listings_short$amenities <- NULL
+
+# Check the modified data types
+
+str(listings_short)
 
 
 
@@ -134,8 +162,6 @@ listings_short$instant_bookable <- ifelse(listings_short$instant_bookable == "t"
 # save the resulting change in a new dataframe and save the dataframe locally on your computer. 
 updated_listings <- listings_short
 write.csv(updated_listings,'listings_updated.csv')
-
-
 
 
 
