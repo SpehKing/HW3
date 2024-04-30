@@ -114,7 +114,7 @@ listings_short$bathrooms_text <- as.numeric(gsub("[^0-9.]", "", listings_short$b
 listings_short$minimum_nights <- as.integer(listings_short$minimum_nights)
 listings_short$maximum_nights <- as.integer(listings_short$maximum_nights)
 
-# Convert 'host_response_rate' and 'host_acceptance_rate' columns to numeric
+# Convert 'host_response_rate' and 'host_acceptance_rate' columns to numeric comment: it introduced null values because some characters are empty
 listings_short$host_response_rate <- as.numeric(gsub("[%]", "", listings_short$host_response_rate))
 listings_short$host_acceptance_rate <- as.numeric(gsub("[%]", "", listings_short$host_acceptance_rate))
 
