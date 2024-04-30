@@ -86,7 +86,6 @@ listings_short=head(listings_df,1000)
 # c) (1 point) 
 # are there any missing values in your dataset's important columns, such as id, host_id or price? If yes, remove the rows where there are any missing values. 
 # if there are no missing values, explain how you checked for them and how you would remove them. 
-
 # We can check which cells might be empty with the is.na function we saw in class. 
 # We can obviously not check them all manually so we'll make a loop.
 which(is.na(listings_short$id))
@@ -103,6 +102,9 @@ which(is.na(listings_short$price))
 # are there any other modifications needed to be done to column types or values to prepare your data for analysis. 
 # hint: pay attention to price column specifically and make any necessary changes.
 str(listings_short)
+
+#change the id to integer
+listings_short$id <- as.integer(listings_short$id)
 
 # Clean columns with text and numbers
 listings_short$price <- as.numeric(gsub("[^0-9.]", "", listings_short$price))
@@ -138,9 +140,21 @@ listings_short$instant_bookable <- ifelse(listings_short$instant_bookable == "t"
 # Convert 'number_of_reviews' columns to integer
 listings_short$number_of_reviews <- as.integer(listings_short$number_of_reviews)
 
-# Check the modified data types
+#remove the collumns with more than 999 missing values
 str(listings_short)
+for (col in names(listings_short)){
+  na_count <- sum(is.na(listings_short[[col]]))
+  if (na_count > 999) {
+    listings_short[[col]] <- NULL
+  }
+}
 
+#remove amenities because it's a empty list of type char
+listings_short$amenities <- NULL
+
+# Check the modified data types
+
+str(listings_short)
 
 
 
