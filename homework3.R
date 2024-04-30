@@ -11,6 +11,7 @@ install.packages('ggplot2')
 library(qdap)
 library(rvest)
 library(ggplot2)
+library(dplyr)
 
 # URL of the Inside Airbnb website
 url <- "https://insideairbnb.com/get-the-data/"
@@ -67,24 +68,29 @@ listings_df  = read.csv("homework_dataset.csv.gz")
 # Write all the codes below the exercise
 # Comment your answer when a question is asked.
 
-#WRITE YOUR CITY NAME HERE------------->
+#WRITE YOUR CITY NAME HERE------------->Prague
 
 #EXERCISE 1 (6 points) ========================================
 
 # a) (1 point)
 # check the data format, what kind of variable do you have?
-
+#In the data format the variables that are there are int, chr, num, logi.
 
 # b) (1 point)
 # subset your data to keep only 1000 rows
-
-
+listings_short=head(listings_df,1000)
 
 
 
 # c) (1 point) 
 # are there any missing values in your dataset's important columns, such as id, host_id or price? If yes, remove the rows where there are any missing values. 
 # if there are no missing values, explain how you checked for them and how you would remove them. 
+which(is.na(listings_short$price))
+which(is.na(listings_short$id))
+which(is.na(listings_short$host_id))
+
+missing_rows <- which(is.na(listings_short$id))
+listings_short <- listings_short[-missing_rows, ]
 
 
 
@@ -94,12 +100,40 @@ listings_df  = read.csv("homework_dataset.csv.gz")
 # are there any other modifications needed to be done to column types or values to prepare your data for analysis. 
 # hint: pay attention to price column specifically and make any necessary changes.
 
+for (col in names(listings_short)){
+  na_count <- sum(is.na(listings_short[[col]]))
+  if (na_count > 999) {
+    listings_short[[col]] <- NULL
+  }
+}
+listings_short$amenities <- NULL
+print(listings_short$price)
 
+listings_short$id <- as.integer(listings_short$id)
+
+listings_short$last_scraped <- as.Date(listings_short$last_scraped)
+listings_short$host_since <- as.Date(listings_short$host_since)
+listings_short$first_review <- as.Date(listings_short$first_review)
+listings_short$last_review <- as.Date(listings_short$last_review)
+listings_short$calendar_last_scraped <- as.Date(listings_short$calendar_last_scraped)
+
+listings_short$host_is_superhost <- ifelse(listings_short$host_is_superhost == "t", TRUE,
+                                           ifelse(listings_short$host_is_superhost == "f", FALSE, NA))
+listings_short$host_has_profile_pic <- ifelse(listings_short$host_has_profile_pic == "t", TRUE,
+                                           ifelse(listings_short$host_has_profile_pic == "f", FALSE, NA))
+listings_short$host_identity_verified <- ifelse(listings_short$host_identity_verified == "t", TRUE,
+                                           ifelse(listings_short$host_identity_verified == "f", FALSE, NA))
+listings_short$has_availability <- ifelse(listings_short$has_availability == "t", TRUE,
+                                           ifelse(listings_short$has_availability == "f", FALSE, NA))
+listings_short$instant_bookable <- ifelse(listings_short$instant_bookable == "t", TRUE,
+                                           ifelse(listings_short$instant_bookable == "f", FALSE, NA))
 
 
 
 # e) (1 points) 
 # save the resulting change in a new dataframe and save the dataframe locally on your computer. 
+updated_listings <- listings_short
+write.csv(updated_listings,'listings_updated.csv')
 
 
 
