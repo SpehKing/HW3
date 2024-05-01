@@ -239,11 +239,32 @@ ggplot(revenue_per_neighborhood, aes(x = neighbourhood_cleansed)) +
 #Please note, examples are for Amsterdam.
 #Hint: Revenue is defined by prices paid. So if a guest books 1 night, the host gets revenue equal to nightly price.
 
+ggplot(revenue_per_neighborhood, aes(x = number_of_listings, y = avg_revenue, color = neighbourhood_cleansed)) +
+  geom_point(aes(size = number_of_listings)) + 
+  geom_text(aes(label = neighbourhood_cleansed), vjust = -1) + 
+  labs(
+    x = "Total Number of Listings",
+    y = "Total estimated revenue (in millions CZK)",
+    size = "Number of Listings",
+    title = "Listings vs. Average Revenue Per Neighborhood"
+  ) +
+  scale_y_continuous(labels = scales::label_number(scale = 1e-6, suffix = "M")) + 
+  theme_minimal() +
+  theme(
+    plot.title = element_text(vjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1) 
+  )
+
+
 
 
 # b) (3 points)
 #Explain the results in the above figure in detail by commenting below. 
-
+# The figure above shows a relationship between the number of listings and the total estimated revenue.
+# Each point represents a neighborhood. Praha 1 and Praha 2 are neighborhoods with more listings and the also generate higher revenue.
+# Praha 2 indicates the highest revenue per listing. In comparison Praha 3 with its relatively high number of listings ans low revenue shows its a less desirable than Praha 1, or Praha 2. 
+# Other districts have negligible amount of listings apart from Praha 5, 10, 6, 7, 8. indicating that they are residential neighborhoods without 
+#the need for turism.
 
 
 
