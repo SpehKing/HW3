@@ -218,10 +218,6 @@ ggplot(revenue_per_neighborhood, aes(x = neighbourhood_cleansed)) +
 
 
 
-
-
-
-
 # b) (3 points)
 #Explain the results in the above figure in detail by commenting below. 
 #In the above figure it is clear that the amount of listings is the highest in the Praha 1 district because that district is in the center of the city
@@ -229,7 +225,7 @@ ggplot(revenue_per_neighborhood, aes(x = neighbourhood_cleansed)) +
 #The popularity of renting a place outside the center rapidly declines.
 #The highest Average Revenue is in Praha 2 district because it is considered the area of the historic establishment of the Czech ruler
 #and therefore the value of the property is the highest. 
-
+#Comment: on the course moodle page, there is a ggplot guide that has instructions on how to do double axis plots.
 
 #EXERCISE 3 (10 points) ==============
 
@@ -256,6 +252,20 @@ ggplot(revenue_per_neighborhood, aes(x = number_of_listings, y = avg_revenue, co
   )
 
 
+
+#pie-chart part
+room_type_counts <- table(updated_listings$room_type)
+room_type_counts_df <- data.frame(room_type = names(room_type_counts),
+                                  count = as.numeric(room_type_counts))
+
+ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start = 0) +
+  scale_fill_brewer("Room Types", palette = "Dark2") +
+  ggtitle("Type of Rooms") +
+  ylab("") +
+  xlab("") +
+  theme_minimal()
 
 
 # b) (3 points)
