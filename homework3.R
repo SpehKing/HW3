@@ -155,7 +155,12 @@ for (col in names(listings_short)){
   }
 }
 
-#remove amenities because it's a empty list of type char
+# Drop columns with inconsistent or unnecessary data
+listings_short$host_picture_url <- NULL
+listings_short$host_thumbnail_url <- NULL
+listings_short$host_url <- NULL
+listings_short$picture_url <- NULL
+listings_short$listing_url <- NULL
 listings_short$amenities <- NULL
 
 # Check the modified data types
@@ -290,6 +295,72 @@ ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
 #QUESION:
 #Copy your codes of creating the listings table here. Remember to make sure all columns types are correct.
 
+# CREATE TABLE LISTINGS (
+#   void INT,
+#   id INT,
+#   scrape_id BIGINT,
+#   last_scraped DATE,
+#   source VARCHAR,
+#   name VARCHAR,
+#   neighborhood_overview VARCHAR,
+#   host_id INT,
+#   host_name VARCHAR,
+#   host_since DATE,
+#   host_location VARCHAR,
+#   host_about VARCHAR,
+#   host_response_time VARCHAR,
+#   host_response_rate INT,
+#   host_acceptance_rate INT,
+#   host_is_superhost BOOLEAN,
+#   host_neighbourhood VARCHAR,
+#   host_listings_count INT,
+#   host_total_listings_count INT,
+#   host_verifications VARCHAR,
+#   host_has_profile_pic BOOLEAN,
+#   host_identity_verified BOOLEAN,
+#   neighbourhood VARCHAR,
+#   neighbourhood_cleansed VARCHAR,
+#   latitude FLOAT,
+#   longitude FLOAT,
+#   property_type VARCHAR,
+#   room_type VARCHAR,
+#   accommodates INT,
+#   bathrooms_text VARCHAR,
+#   beds INT,
+#   price FLOAT,
+#   minimum_nights INT,
+#   maximum_nights INT,
+#   minimum_minimum_nights INT,
+#   maximum_minimum_nights INT,
+#   minimum_maximum_nights INT,
+#   maximum_maximum_nights INT,
+#   minimum_nights_avg_ntm FLOAT,
+#   maximum_nights_avg_ntm FLOAT,
+#   has_availability BOOLEAN,
+#   availability_30 INT,
+#   availability_60 INT,
+#   availability_90 INT,
+#   availability_365 INT,
+#   calendar_last_scraped DATE,
+#   number_of_reviews INT,
+#   number_of_reviews_ltm INT,
+#   number_of_reviews_l30d INT,
+#   first_review DATE,
+#   last_review DATE,
+#   review_scores_rating FLOAT,
+#   review_scores_accuracy FLOAT,
+#   review_scores_cleanliness FLOAT,
+#   review_scores_checkin FLOAT,
+#   review_scores_communication FLOAT,
+#   review_scores_location FLOAT,
+#   review_scores_value FLOAT,
+#   instant_bookable BOOLEAN,
+#   calculated_host_listings_count INT,
+#   calculated_host_listings_count_entire_homes INT,
+#   calculated_host_listings_count_private_rooms INT,
+#   calculated_host_listings_count_shared_rooms INT,
+#   reviews_per_month FLOAT
+# );
 
 
 # b) (3 points)
@@ -300,7 +371,14 @@ ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
 
 #ANSWER:
 
+# SELECT neighbourhood_cleansed, COUNT(*) AS num_listings
+# FROM LISTINGS
+# WHERE minimum_nights > 5 AND price < 150
+# GROUP BY neighbourhood_cleansed
+# ORDER BY minimum_nights ASC;
 
+# This request does not give me any result because there are no listing with minmum_nights > 5 and price < 150.
+# So it then tries to order an empty result which gives out an error.
 
 
 # c) (3 points)
@@ -310,7 +388,14 @@ ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
 
 #ANSWER:
 
+# SELECT host_id, COUNT(*) AS num_listings
+# FROM LISTINGS
+# GROUP BY host_id
+# ORDER BY num_listings DESC
+# LIMIT 1;
 
+# HOST_ID	NUM_LISTINGS
+# 227945	32
 
 # d) (3 points)
 
@@ -320,7 +405,13 @@ ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
 
 #ANSWER:
 
+# SELECT SUM(price * 365) AS annual_revenue
+# FROM LISTINGS
+# WHERE review_scores_rating >= 8 AND review_scores_rating <= 10
+# AND LOWER(neighborhood_overview) LIKE '%walk%'
+# AND LOWER(neighborhood_overview) LIKE '%center%';
 
+# This request does not give me any results as there are no listing with a review score between 8 and 10.
 
 # e) (3 points)
 
@@ -328,9 +419,22 @@ ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
 #QUESTION: 
 #Then find the top 5 neighborhoods in your city that have the highest average rating, but limit the highest average rating to be at least 3.
 
-
 #ANSWER:
 
+# SELECT neighbourhood_cleansed AS neighborhood, 
+# AVG(review_scores_rating) AS avg_rating
+# FROM LISTINGS
+# GROUP BY neighbourhood_cleansed
+# HAVING AVG(review_scores_rating) >= 3
+# ORDER BY avg_rating DESC
+# LIMIT 5;
+
+# NEIGHBORHOOD	AVG_RATING
+# Praha 21	5
+# Praha 16	5
+# Kunratice	4.89
+# Praha 9	4.873076923
+# Praha 11	4.85
 
 
 
