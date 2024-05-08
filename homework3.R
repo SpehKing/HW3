@@ -256,6 +256,14 @@ ggplot(revenue_per_neighborhood, aes(x = number_of_listings, y = avg_revenue, co
     axis.text.x = element_text(angle = 45, hjust = 1) 
   )
 
+# b) (3 points)
+#Explain the results in the above figure in detail by commenting below. 
+# The figure above shows a relationship between the number of listings and the total estimated revenue.
+# Each point represents a neighborhood. Praha 1 and Praha 2 are neighborhoods with more listings and the also generate higher revenue.
+# Praha 2 indicates the highest revenue per listing. In comparison Praha 3 with its relatively high number of listings ans low revenue shows its a less desirable than Praha 1, or Praha 2. 
+# Other districts have negligible amount of listings apart from Praha 5, 10, 6, 7, 8. indicating that they are residential neighborhoods without 
+#the need for turism.
+
 
 
 #pie-chart part
@@ -272,16 +280,7 @@ ggplot(room_type_counts_df, aes(x = "", y = count, fill = room_type)) +
   xlab("") +
   theme_minimal()
 
-
-# b) (3 points)
-#Explain the results in the above figure in detail by commenting below. 
-# The figure above shows a relationship between the number of listings and the total estimated revenue.
-# Each point represents a neighborhood. Praha 1 and Praha 2 are neighborhoods with more listings and the also generate higher revenue.
-# Praha 2 indicates the highest revenue per listing. In comparison Praha 3 with its relatively high number of listings ans low revenue shows its a less desirable than Praha 1, or Praha 2. 
-# Other districts have negligible amount of listings apart from Praha 5, 10, 6, 7, 8. indicating that they are residential neighborhoods without 
-#the need for turism.
-
-
+#piechart comment
 
 
 
