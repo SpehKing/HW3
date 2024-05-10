@@ -1,5 +1,5 @@
 #SET YOUR WORKING DIRECTORY
-setwd('/home/hmont/Documents/cours/TARTU-UNIVERSITY/S2/Business-Analytics/Homeworks/BA-Homework-03')
+setwd('/home/hmont/Documents/cours/TARTU-UNIVERSITY/S2/Business-Analytics/Homeworks/BA-Homework-03/HW3')
 
 #download necessary libraries (this needs to be run only once)
 #install.packages('rvest')
@@ -115,7 +115,6 @@ listings_short$bathrooms_text <- as.numeric(gsub("[^0-9.]", "", listings_short$b
 missing_rows <- which(is.na(listings_short$price))
 listings_short <- listings_short[-missing_rows, ]
 
-
 # Convert 'minimum_nights' and 'maximum_nights' columns to integer
 listings_short$minimum_nights <- as.integer(listings_short$minimum_nights)
 listings_short$maximum_nights <- as.integer(listings_short$maximum_nights)
@@ -130,6 +129,12 @@ listings_short$host_since <- as.Date(listings_short$host_since)
 listings_short$first_review <- as.Date(listings_short$first_review)
 listings_short$last_review <- as.Date(listings_short$last_review)
 listings_short$calendar_last_scraped <- as.Date(listings_short$calendar_last_scraped)
+
+# Remove NA values in dates
+listings_short <- listings_short[-missing_rows, ]
+missing_rows <- which(is.na(listings_short$first_review))
+listings_short <- listings_short[-missing_rows, ]
+missing_rows <- which(is.na(listings_short$last_review))
 
 # Convert boolean columns to logical (as.logical didn't work because it didn't understand "t" and "f")
 listings_short$host_is_superhost <- ifelse(listings_short$host_is_superhost == "t", TRUE,
@@ -172,8 +177,7 @@ str(listings_short)
 # e) (1 points) 
 # save the resulting change in a new dataframe and save the dataframe locally on your computer. 
 updated_listings <- listings_short
-write.csv(updated_listings,'listings_updated.csv')
-  
+write.csv(updated_listings, 'listings_updated.csv', row.names = FALSE)  
 
 
 #EXERCISE 2 (10 points) ==============
